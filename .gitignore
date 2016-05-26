@@ -1,0 +1,14 @@
+bin
+.vs
+_NCrunch_*
+*.ncrunchsolution.user
+*.ncrunchsolution
+node_modules
+obj
+*.xproj.user
+project.lock.json
+bower_components
+typings
+src/Folke.Etxea/wwwroot
+src/Folke.Etxea/test.db
+src/Folke.Etxea/src/**/*.js

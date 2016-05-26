@@ -1,0 +1,24 @@
+{
+  "name": "folke-etxea",
+  "version": "1.0.0",
+  "description": "The web site for the Etxea World of Warcraft guild",
+  "repository": { "url": "https://github.com/folkelib/Folke.Etxea" },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sidoine De Wispelare",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp-concat": "2.5.2",
+    "gulp-cssmin": "0.1.7",
+    "gulp-uglify": "1.2.0",
+    "typescript": "^1.8.9",
+    "gulp-typescript": "^2.12.1",
+    "gulp-less": "^3.0.3",
+    "gulp-requirejs-bundler": "^0.1.1",
+    "gulp-html-replace": "^1.5.4",
+    "gulp-rename": "^1.2.2",
+    "gulp": "^3.9.0"
+  }
+}
