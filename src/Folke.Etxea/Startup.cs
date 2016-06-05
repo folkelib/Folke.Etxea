@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Folke.CsTsService;
 using Folke.Elm;
-using Folke.Elm.Sqlite;
+using Folke.Elm.PostgreSql;
 using Folke.Identity.Elm;
 using Folke.Etxea.Data;
 using Folke.Etxea.Services;
@@ -20,6 +20,8 @@ using Folke.Forum.Service;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using System.Linq;
 using Folke.Identity.Server;
+using System.Reflection;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 
 namespace Folke.Etxea
 {
@@ -80,7 +82,7 @@ namespace Folke.Etxea
 
             services.AddSingleton<IConfiguration>(provider => Configuration) ;
             services.AddSingleton<ConfigurationService>();
-            services.AddElm<SqliteDriver>(options =>
+            services.AddElm<PostgreSqlDriver>(options =>
             {
                 options.ConnectionString = Configuration["Data:IdentityConnection:ConnectionString"];
             });
@@ -97,7 +99,13 @@ namespace Folke.Etxea
         }
 
         // Configure is called after ConfigureServices is called.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IFolkeConnection connection, RoleManager<Role> roleManager, UserManager<Account> userManager)
+        public void Configure(
+            IApplicationBuilder app, 
+            IHostingEnvironment env, 
+            IFolkeConnection connection, 
+            RoleManager<Role> roleManager, 
+            UserManager<Account> userManager,
+            ApplicationPartManager applicationPartManager)
         {
             app.UseIdentity();
             app.UseDefaultFiles();
@@ -107,10 +115,19 @@ namespace Folke.Etxea
 
             connection.UpdateIdentityUserSchema<int, Account>();
             connection.UpdateIdentityRoleSchema<int, Account>();
-            connection.UpdateSchema(typeof (Account).Assembly);
+            connection.UpdateSchema(typeof (Account).GetTypeInfo().Assembly);
             connection.UpdateForumSchema<Account>();
 
-            CreateAdministrator(roleManager, userManager).GetAwaiter().GetResult();
+            using (var transaction = connection.BeginTransaction())
+            {
+                CreateAdministrator(roleManager, userManager).GetAwaiter().GetResult();
+                transaction.Commit();
+            }
+
+            if (env.IsDevelopment())
+            {
+                CreateTypeScriptServices(applicationPartManager);
+            }
         }
         
         private static async Task CreateAdministrator(RoleManager<Role> roleManager, UserManager<Account> userManager)
@@ -134,10 +151,13 @@ namespace Folke.Etxea
             }
         }
         
-        private void CreateTypeScriptServices(IControllerTypeProvider controllerProvider)
+        private void CreateTypeScriptServices(ApplicationPartManager applicationPartManager)
         {
+            ControllerFeature feature = new ControllerFeature();
+            applicationPartManager.PopulateFeature(feature);
+            var controllerTypes = feature.Controllers.Select(c => c.AsType());
             var converter = new Converter(new WaAdapter());
-            converter.Write(controllerProvider.ControllerTypes.Select(x => x.AsType()),
+            converter.Write(controllerTypes,
                 "src/services/services.ts",
                 "bower_components/folke-ko-service-helpers/folke-ko-service-helpers",
                 "bower_components/folke-ko-validation/folke-ko-validation");

@@ -94,7 +94,7 @@ gulp.task('less', function () {
     return gulp.src(paths.less).pipe(less()).pipe(gulp.dest(paths.cssDir));
 });
 
-gulp.task('ts', ['csts'], function () {
+gulp.task('ts', function () {
     var tsResult = gulp.src(paths.ts).pipe(typescript(tsProject));
     return tsResult.js.pipe(gulp.dest(paths.jsDir));
 });
@@ -118,10 +118,3 @@ gulp.task("requirejs", ['ts', 'bower'], function () {
         .pipe(gulp.dest(paths.webroot));
 });
 
-gulp.task("csts", function (cb) {
-  exec('dnx csts', function (err, stdout, stderr) {
-    console.log(stdout);
-    console.log(stderr);
-    cb(err);
-    });
-});
