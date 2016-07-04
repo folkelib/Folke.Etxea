@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Folke.CsTsService;
 using Folke.Elm;
@@ -11,10 +10,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Serialization;
 using Folke.Forum;
 using Folke.Forum.Service;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -53,15 +50,7 @@ namespace Folke.Etxea
                 };
             }).AddDefaultTokenProviders();
             
-            services.AddMvc(options =>
-            {
-                var jsonOutputFormatter = new JsonOutputFormatter
-                {
-                    SerializerSettings = {ContractResolver = new CamelCasePropertyNamesContractResolver()}
-                };
-                options.OutputFormatters.Insert(0, jsonOutputFormatter);
-            })
-                .AddIdentityServer<int, Account, AccountViewModel, Role, RoleViewModel>()
+            services.AddMvc().AddIdentityServer<int, Account, AccountViewModel, Role, RoleViewModel>()
                 .AddForum< Account, AccountViewModel>();
             
             services.AddAuthorization(options =>

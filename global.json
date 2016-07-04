@@ -1,6 +1,6 @@
 {
   "projects": [ "src", "../Folke.Identity.Server/src", "../Folke.Identity.Elm/src", "../Folke.Elm/src", "../Folke.CsTsService/src", "../Folke.Forum/src", "../Folke.Mvc.Extensions/src" ],
   "sdk": {
-    "version": "1.0.0-preview1-002702"
+    "version": "1.0.0-preview2-003121"
   }
 }

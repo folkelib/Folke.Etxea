@@ -57,7 +57,7 @@ var requireJsOptimizerConfig = {
     }
 };
 
-var tsProject = typescript.createProject('src/tsconfig.json');
+var tsProject = typescript.createProject('tsconfig.json');
 
 gulp.task('default', ['build']);
 

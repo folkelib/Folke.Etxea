@@ -5,6 +5,48 @@ import validator = require('bower_components/folke-ko-validation/folke-ko-valida
 
 export var loading = helper.loading;
 
+export class ExternalLinkView {
+	originalData: ExternalLinkViewData;
+	changed: KnockoutComputed<boolean>;
+
+	id: number;
+	title: KnockoutObservable<string> = ko.observable<string>();
+	url: KnockoutObservable<string> = ko.observable<string>();
+
+	constructor(data?:ExternalLinkViewData) {
+		this.originalData = data = data || {};
+		this.load(data);
+		this.changed = ko.computed(() => 
+			this.title() !== this.originalData.title
+			|| this.url() !== this.originalData.url
+		);
+	}
+
+	public toJs() {
+		return {
+			id: this.id,
+			title: this.title(),
+			url: this.url()
+		}
+	}
+
+	public load(data:ExternalLinkViewData) {
+		this.id = data.id;
+		this.title(data.title);
+		this.url(data.url);
+	}
+
+	public reset() {
+		this.load(this.originalData);
+	}
+}
+
+export interface ExternalLinkViewData {
+	id?: number;
+	title?: string;
+	url?: string;
+}
+
 export class LoginResultView {
 	originalData: LoginResultViewData;
 	changed: KnockoutComputed<boolean>;
@@ -1250,54 +1292,56 @@ export interface PollAndVoteViewData {
 	poll?: PollViewData;
 }
 
-export class ExternalLinkView {
-	originalData: ExternalLinkViewData;
-	changed: KnockoutComputed<boolean>;
-
-	id: number;
-	title: KnockoutObservable<string> = ko.observable<string>();
-	url: KnockoutObservable<string> = ko.observable<string>();
-
-	constructor(data?:ExternalLinkViewData) {
-		this.originalData = data = data || {};
-		this.load(data);
-		this.changed = ko.computed(() => 
-			this.title() !== this.originalData.title
-			|| this.url() !== this.originalData.url
-		);
-	}
-
-	public toJs() {
-		return {
-			id: this.id,
-			title: this.title(),
-			url: this.url()
-		}
-	}
-
-	public load(data:ExternalLinkViewData) {
-		this.id = data.id;
-		this.title(data.title);
-		this.url(data.url);
-	}
-
-	public reset() {
-		this.load(this.originalData);
-	}
-}
-
-export interface ExternalLinkViewData {
-	id?: number;
-	title?: string;
-	url?: string;
-}
-
 export enum LoginStatusEnum {
 	Success,
 	LockedOut,
 	RequiresVerification
 }
 
+
+export class TagController {
+	public complete(parameters:{query:string}) {
+		return helper.fetchList<string>('/api/tag/' + helper.getQueryString({query: parameters.query}), 'GET', null);
+	}
+}
+
+export var tag = new TagController();
+
+export class ExternalLinkController {
+	public getAllT<T extends ExternalLinkView>(factory: (data:ExternalLinkViewData ) => T, parameters:{}) {
+		return helper.fetchListT('/api/external-link/', 'GET', factory, null);
+	}
+
+	public getAll = (parameters:{}) => {
+		return this.getAllT(data => new ExternalLinkView(data), parameters);
+	}
+
+	public getT<T extends ExternalLinkView>(factory: (data:ExternalLinkViewData ) => T, parameters:{id:number}) {
+		return helper.fetchSingleT('/api/external-link/' + parameters.id + '', 'GET', factory, null);
+	}
+
+	public get = (parameters:{id:number}) => {
+		return this.getT(data => new ExternalLinkView(data), parameters);
+	}
+
+	public postT<T extends ExternalLinkView>(factory: (data:ExternalLinkViewData ) => T, parameters:{value:ExternalLinkView}) {
+		return helper.fetchSingleT('/api/external-link/', 'POST', factory, JSON.stringify(parameters.value.toJs()));
+	}
+
+	public post = (parameters:{value:ExternalLinkView}) => {
+		return this.postT(data => new ExternalLinkView(data), parameters);
+	}
+
+	public put(parameters:{id:number; value:ExternalLinkView}) {
+		return helper.fetchVoid('/api/external-link/' + parameters.id + '', 'PUT', JSON.stringify(parameters.value.toJs()));
+	}
+
+	public delete(parameters:{id:number}) {
+		return helper.fetchVoid('/api/external-link/' + parameters.id + '', 'DELETE', null);
+	}
+}
+
+export var externalLink = new ExternalLinkController();
 
 export class AuthenticationController {
 	public loginT<T extends LoginResultView>(factory: (data:LoginResultViewData ) => T, parameters:{loginView:LoginView}) {
@@ -1722,48 +1766,4 @@ export class PollController {
 }
 
 export var poll = new PollController();
-
-export class ExternalLinkController {
-	public getAllT<T extends ExternalLinkView>(factory: (data:ExternalLinkViewData ) => T, parameters:{}) {
-		return helper.fetchListT('/api/external-link/', 'GET', factory, null);
-	}
-
-	public getAll = (parameters:{}) => {
-		return this.getAllT(data => new ExternalLinkView(data), parameters);
-	}
-
-	public getT<T extends ExternalLinkView>(factory: (data:ExternalLinkViewData ) => T, parameters:{id:number}) {
-		return helper.fetchSingleT('/api/external-link/' + parameters.id + '', 'GET', factory, null);
-	}
-
-	public get = (parameters:{id:number}) => {
-		return this.getT(data => new ExternalLinkView(data), parameters);
-	}
-
-	public postT<T extends ExternalLinkView>(factory: (data:ExternalLinkViewData ) => T, parameters:{value:ExternalLinkView}) {
-		return helper.fetchSingleT('/api/external-link/', 'POST', factory, JSON.stringify(parameters.value.toJs()));
-	}
-
-	public post = (parameters:{value:ExternalLinkView}) => {
-		return this.postT(data => new ExternalLinkView(data), parameters);
-	}
-
-	public put(parameters:{id:number; value:ExternalLinkView}) {
-		return helper.fetchVoid('/api/external-link/' + parameters.id + '', 'PUT', JSON.stringify(parameters.value.toJs()));
-	}
-
-	public delete(parameters:{id:number}) {
-		return helper.fetchVoid('/api/external-link/' + parameters.id + '', 'DELETE', null);
-	}
-}
-
-export var externalLink = new ExternalLinkController();
-
-export class TagController {
-	public complete(parameters:{query:string}) {
-		return helper.fetchList<string>('/api/tag/' + helper.getQueryString({query: parameters.query}), 'GET', null);
-	}
-}
-
-export var tag = new TagController();
 

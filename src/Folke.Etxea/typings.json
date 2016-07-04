@@ -1,0 +1,11 @@
+{
+  "name": "folke-etxea",
+  "globalDependencies": {
+    "knockout": "github:DefinitelyTyped/DefinitelyTyped/knockout/knockout.d.ts#7a3ca1f0b8a0960af9fc1838f3234cc9d6ce0645",
+    "crossroads": "github:DefinitelyTyped/DefinitelyTyped/crossroads/crossroads.d.ts#7a3ca1f0b8a0960af9fc1838f3234cc9d6ce0645",
+    "js-signals": "github:DefinitelyTyped/DefinitelyTyped/js-signals/js-signals.d.ts#7a3ca1f0b8a0960af9fc1838f3234cc9d6ce0645",
+    "hasher": "github:DefinitelyTyped/DefinitelyTyped/hasher/hasher.d.ts#7a3ca1f0b8a0960af9fc1838f3234cc9d6ce0645",
+    "es6-promise": "github:DefinitelyTyped/DefinitelyTyped/es6-promise/es6-promise.d.ts#c560ba6f0f55ce6f50e9d06e37b5bc0e2b9117b0",
+    "whatwg-fetch": "github:DefinitelyTyped/DefinitelyTyped/whatwg-fetch/whatwg-fetch.d.ts#c560ba6f0f55ce6f50e9d06e37b5bc0e2b9117b0"
+  }
+}
