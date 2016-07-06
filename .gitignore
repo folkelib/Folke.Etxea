@@ -12,3 +12,5 @@ typings
 src/Folke.Etxea/wwwroot
 src/Folke.Etxea/test.db
 src/Folke.Etxea/src/**/*.js
+/src/Folke.Etxea/appsettings.Local.json
+/src/Folke.Etxea/npm-debug.log
