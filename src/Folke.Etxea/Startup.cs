@@ -29,6 +29,7 @@ namespace Folke.Etxea
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(hostingEnvironment.ContentRootPath)
                 .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.{hostingEnvironment.EnvironmentName}.json", optional: true)
                 .AddJsonFile("appsettings.Local.json", optional: true);
             configurationBuilder.AddCommandLine(new string[] { });
             Configuration = configurationBuilder.Build();
