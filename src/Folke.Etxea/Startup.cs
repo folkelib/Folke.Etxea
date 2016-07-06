@@ -27,7 +27,9 @@ namespace Folke.Etxea
         public Startup(IHostingEnvironment hostingEnvironment)
         {
             var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(hostingEnvironment.ContentRootPath).AddJsonFile("appsettings.json");
+            configurationBuilder.SetBasePath(hostingEnvironment.ContentRootPath)
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.Local.json", optional: true);
             configurationBuilder.AddCommandLine(new string[] { });
             Configuration = configurationBuilder.Build();
         }
@@ -49,10 +51,10 @@ namespace Folke.Etxea
                     RequireUppercase = false
                 };
             }).AddDefaultTokenProviders();
-            
+
             services.AddMvc().AddIdentityServer<int, Account, AccountViewModel, Role, RoleViewModel>()
                 .AddForum< Account, AccountViewModel>();
-            
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("UserList", policy =>
@@ -78,7 +80,7 @@ namespace Folke.Etxea
             services.AddElmIdentity<Account, Role, int>();
             services.AddIdentityServer<Account, int, EmailService, UserService, AccountViewModel>();
             services.AddRoleIdentityServer<Role, RoleService, RoleViewModel>();
-            
+
             services.Configure<FileImageStoreOptions>(options =>
             {
                 options.BaseUrl = "http://localhost:5000/upload/";
@@ -89,10 +91,10 @@ namespace Folke.Etxea
 
         // Configure is called after ConfigureServices is called.
         public void Configure(
-            IApplicationBuilder app, 
-            IHostingEnvironment env, 
-            IFolkeConnection connection, 
-            RoleManager<Role> roleManager, 
+            IApplicationBuilder app,
+            IHostingEnvironment env,
+            IFolkeConnection connection,
+            RoleManager<Role> roleManager,
             UserManager<Account> userManager,
             ApplicationPartManager applicationPartManager)
         {
@@ -118,7 +120,7 @@ namespace Folke.Etxea
                 CreateTypeScriptServices(applicationPartManager);
             }
         }
-        
+
         private static async Task CreateAdministrator(RoleManager<Role> roleManager, UserManager<Account> userManager)
         {
             var administrateur = await roleManager.FindByNameAsync("Administrator");
@@ -130,7 +132,7 @@ namespace Folke.Etxea
             var users = await userManager.GetUsersInRoleAsync("Administrator");
             if (users.Count == 0)
             {
-                var result = await userManager.CreateAsync(new Account { UserName = "admin@example.com", Email = "admin@example.com" }, 
+                var result = await userManager.CreateAsync(new Account { UserName = "admin@example.com", Email = "admin@example.com" },
                         "changethis");
                 if (result.Succeeded)
                 {
@@ -139,7 +141,7 @@ namespace Folke.Etxea
                 }
             }
         }
-        
+
         private void CreateTypeScriptServices(ApplicationPartManager applicationPartManager)
         {
             ControllerFeature feature = new ControllerFeature();
